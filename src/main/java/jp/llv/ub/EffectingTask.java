@@ -64,7 +64,7 @@ public class EffectingTask extends BukkitRunnable {
             }
         }
 
-        locations.stream().forEach((l) -> this.player.spawnParticle(Particle.BARRIER, l, 1));
+        locations.forEach((l) -> this.player.spawnParticle(Particle.BLOCK_MARKER, l, 1, Bukkit.createBlockData(Material.BARRIER)));
     }
 
     public static void init(UsefulBarrier instance, int range, long checkPeriod, Material visible) {
