@@ -51,8 +51,6 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
     private static Material BREAKER;
     private static Material VISIBLE;
 
-    private Optional<NCPHook> ncp;
-
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -77,10 +75,6 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
             }
             ITEM_DROPS.add(new ItemDrop(m, drops.getDouble(name)));
         }
-
-        ncp = getServer().getPluginManager().isPluginEnabled("NoCheatPlus")
-                ? Optional.of(new NCPHook())
-                : Optional.empty();
 
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -138,10 +132,8 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
             return;
         }
         BlockBreakEvent newEvent = new BlockBreakEvent(event.getClickedBlock(), event.getPlayer());
-        
-        ncp.ifPresent(hook ->  hook.exempt(event.getPlayer()));
+
         getServer().getPluginManager().callEvent(newEvent);
-        ncp.ifPresent(hook ->  hook.unexempt(event.getPlayer()));
         
         
         if (newEvent.isCancelled()) {
