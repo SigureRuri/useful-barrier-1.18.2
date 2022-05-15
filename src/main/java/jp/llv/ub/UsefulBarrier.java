@@ -17,7 +17,7 @@
 package jp.llv.ub;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
@@ -46,7 +46,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class UsefulBarrier extends JavaPlugin implements Listener {
 
-    private static final Set<ItemDrop> ITEM_DROPS = new HashSet();
+    private static final Set<ItemDrop> ITEM_DROPS = new HashSet<>();
 
     private static Material BREAKER;
     private static Material VISIBLE;
@@ -56,15 +56,15 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
         saveDefaultConfig();
         FileConfiguration conf = getConfig();
         try {
-            BREAKER = Material.valueOf(conf.getString("break_tool").toUpperCase());
-            VISIBLE = Material.valueOf(conf.getString("visible_tool").toUpperCase());
+            BREAKER = Material.valueOf(Objects.requireNonNull(conf.getString("break_tool")).toUpperCase());
+            VISIBLE = Material.valueOf(Objects.requireNonNull(conf.getString("visible_tool")).toUpperCase());
         } catch (IllegalArgumentException ex) {
             getLogger().warning("No such material. Now using default tool");
             BREAKER = Material.BARRIER;
             VISIBLE = Material.BARRIER;
         }
         EffectingTask.init(this, conf.getInt("check_range"), conf.getLong("check_freq"), VISIBLE);
-        ConfigurationSection drops = conf.getConfigurationSection("drops");
+        ConfigurationSection drops = Objects.requireNonNull(conf.getConfigurationSection("drops"));
         for (String name : drops.getKeys(false)) {
             Material m;
             try {
@@ -82,7 +82,7 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
     private void checkItemInHand(Player player) {
         if ((player.isOnline())
             && (player.getGameMode() == GameMode.SURVIVAL)
-            && (player.getInventory().getItemInMainHand() != null) && (player.getInventory().getItemInMainHand().getType() == Material.BARRIER)) {
+            && (player.getInventory().getItemInMainHand().getType() == Material.BARRIER)) {
             EffectingTask.call(player);
         } else {
             EffectingTask.cancel(player);
@@ -141,20 +141,13 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
         }
         Location l = event.getClickedBlock().getLocation();
         event.getClickedBlock().setType(Material.AIR);
-        l.getWorld().playEffect(l, Effect.STEP_SOUND, Material.GLASS);
-        ITEM_DROPS.stream().forEach(id -> event.getClickedBlock().getWorld().dropItem(l, id.getDrops()));
+        Objects.requireNonNull(l.getWorld()).playEffect(l, Effect.STEP_SOUND, Material.GLASS);
+        ITEM_DROPS.forEach(id -> event.getClickedBlock().getWorld().dropItem(l, id.getDrops()));
     }
 
-    private static class ItemDrop {
+    private record ItemDrop(Material material, double percentage) {
 
         private static final Random RANDOM = new Random();
-        private final Material material;
-        private final double percentage;
-
-        public ItemDrop(Material material, double percentage) {
-            this.material = material;
-            this.percentage = percentage;
-        }
 
         public ItemStack getDrops() {
             int amount = (int) (this.percentage / 100.0D);

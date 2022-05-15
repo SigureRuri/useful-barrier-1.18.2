@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,7 +34,7 @@ public class EffectingTask extends BukkitRunnable {
     private static int RANGE = 10;
     private static long CHECK_PERIOD = 20L;
     private static Material VISIBLE = Material.BARRIER;
-    private static final Map<Player, EffectingTask> TASKS = new HashMap();
+    private static final Map<Player, EffectingTask> TASKS = new HashMap<>();
 
     private static UsefulBarrier instance;
     private final Player player;
@@ -45,13 +47,12 @@ public class EffectingTask extends BukkitRunnable {
     public void run() {
         if ((!this.player.isOnline())
                 || (this.player.getGameMode() != GameMode.SURVIVAL)
-                || (this.player.getInventory().getItemInMainHand() == null)
                 || (this.player.getInventory().getItemInMainHand().getType() != VISIBLE)) {
             cancel(this.player);
             return;
         }
 
-        Set<Location> locations = new HashSet();
+        Set<Location> locations = new HashSet<>();
         for (int x = -RANGE; x <= RANGE; x++) {
             for (int y = -RANGE; y <= RANGE; y++) {
                 for (int z = -RANGE; z <= RANGE; z++) {
