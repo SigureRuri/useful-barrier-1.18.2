@@ -4,5 +4,7 @@ author: toyblocks
 
 main: jp.llv.ub.UsefulBarrier
 
+api-version: 1.18
+
 softdepend:
   - NoCheatPlus
