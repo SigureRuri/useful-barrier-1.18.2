@@ -146,7 +146,12 @@ public class UsefulBarrier extends JavaPlugin implements Listener {
         Location l = event.getClickedBlock().getLocation();
         event.getClickedBlock().setType(Material.AIR);
         Objects.requireNonNull(l.getWorld()).playEffect(l, Effect.STEP_SOUND, Material.GLASS);
-        ITEM_DROPS.forEach(id -> event.getClickedBlock().getWorld().dropItem(l, id.getDrops()));
+        ITEM_DROPS.forEach(id -> {
+            var drops = id.getDrops();
+            if (drops.getAmount() > 0) {
+                event.getClickedBlock().getWorld().dropItem(l, drops);
+            }
+        });
     }
 
     private record ItemDrop(Material material, double percentage) {
